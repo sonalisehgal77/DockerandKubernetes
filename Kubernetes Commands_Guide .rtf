@@ -1,0 +1,399 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;\f2\fswiss\fcharset0 ArialMT;
+\f3\fmodern\fcharset0 Courier-Bold;\f4\fmodern\fcharset0 Courier;\f5\fnil\fcharset0 Menlo-Italic;
+}
+{\colortbl;\red255\green255\blue255;\red255\green255\blue255;\red0\green0\blue0;\red27\green29\blue31;
+\red7\green22\blue36;\red232\green235\blue20;\red251\green0\blue255;\red254\green212\blue213;\red26\green26\blue26;
+\red246\green246\blue246;\red83\green83\blue83;\red16\green121\blue2;\red251\green2\blue7;}
+{\*\expandedcolortbl;;\cssrgb\c100000\c100000\c100000;\cssrgb\c0\c0\c0;\cssrgb\c14118\c15294\c16078;
+\cssrgb\c1961\c11765\c18824;\cssrgb\c92620\c92472\c8348;\cssrgb\c100000\c23501\c100000;\cssrgb\c100000\c86652\c86646;\cssrgb\c13333\c13333\c13333;
+\cssrgb\c97255\c97255\c97255;\cssrgb\c40000\c40000\c40000;\cssrgb\c0\c53333\c0;\cssrgb\c100000\c14913\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww33400\viewh17940\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Kubernetes Commands :\
+\
+Namespace : Logical grouping of resources.\
+\
+systemctl status kubeadm\
+systemctl status kubelet\
+\
+Check Version:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 root@master:~# kubelet --version\
+Kubernetes v1.20.4\
+root@master:~# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+How to check API version.\
+\
+kubectl api-resporces\
+\
+kubectl explain pods | less \
+kubectl explain deployment | less \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 root@master:~/YAML# kubectl explain pods | less\
+root@master:~/YAML# \
+root@master:~/YAML# kubectl explain deployments | less\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 root@master:~/YAML# kubectl api-resources\
+NAME                              SHORTNAMES   APIVERSION                             NAMESPACED   KIND\
+bindings                                       v1                                     true         Binding\
+componentstatuses                 cs           v1                                     false        ComponentStatus\
+configmaps                        cm           v1                                     true         ConfigMap\
+endpoints                         ep           v1                                     true         Endpoints\
+events                            ev           v1                                     true         Event\
+limitranges                       limits       v1                                     true         LimitRange\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs30 \cf4 \cb2 \expnd0\expndtw0\kerning0
+Steps to forcefully delete a namespace:\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3\b\fs34 \cf2 \cb5 kubectl get ns developer -o json  > tmp.json
+\f4\b0 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs30 \cf4 \cb2 \
+vi tmp.json \'97> remove the Kubernetes from the finalizer , after removing it should look like below.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \kerning1\expnd0\expndtw0 \CocoaLigature0 "\cf6 name\cf2 ": "\cf7 dev2\cf2 ",\
+        "\cf6 resourceVersion\cf2 ": "\cf7 56683\cf2 ",\
+        "\cf6 uid\cf2 ": "\cf7 054727c3-e4da-422a-b641-dec5f84294b4\cf2 "\
+    \},\
+    "\cf6 spec\cf2 ": \cf8 \{\cf2 \
+        "\cf6 finalizers\cf2 ": \cf8 []\cf2 \
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs30 \cf4 \cb2 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+Open another terminal and run below\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \kerning1\expnd0\expndtw0 \CocoaLigature0 root@master:~# kubectl proxy\
+Starting to serve on 127.0.0.1:8001\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs30 \cf4 \cb2 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+Then, go to other terminal and run below command :\
+\
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f1\fs26 \cf3 \cb1 curl -k -H "Content-Type: application/json" -X PUT --data-binary @tmp.json http://127.0.0.1:8001/api/v1/namespaces/\{Your namespace name\}/finalize\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\fs28 \cf2 \cb3 \kerning1\expnd0\expndtw0 \CocoaLigature0 curl -k -H "Content-Type: application/json" -X PUT --data-binary @tmp.json http://127.0.0.1:8001/api/v1/namespaces/dev2/finalize
+\f2\fs30 \cf4 \cb2 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+\pard\pardeftab720\partightenfactor0
+\cf4  \
+\pard\pardeftab720\sl320\partightenfactor0
+
+\f1\fs26 \cf3 \cb1 curl -k -H "Content-Type: application/json" -X PUT --data-binary @tmp.json http://127.0.0.1:8001/api/v1/namespaces/dev2/finalize\
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+kubectl get pods \'97all-namespace -o wide\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs28 \cf9 \cb10 \expnd0\expndtw0\kerning0
+kubectl config set-context --current --namespace\cf11 =\cf9 <insert-namespace-name-here>\
+
+\f5\i \cf12 # Validate it
+\f1\i0 \cf9 \
+kubectl config view --minify | grep namespace:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+kubectl get nodes\
+\
+kubectl create namespace <name-space>\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:~# kubectl create namespace dev2\
+namespace/dev2 created\
+root@master:~# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+kubectl delete ns <namespace> : kubectl delete ns dev-reg10\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:~# kubectl delete ns dev-reg10\
+namespace "dev-reg10" deleted\
+root@master:~# \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 kubectl get ns \'97 to list the namespaces.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:~# kubectl get ns\
+NAME              STATUS   AGE\
+default           Active   2d21h\
+dev2              Active   30s\
+kube-node-lease   Active   2d21h\
+kube-public       Active   2d21h\
+kube-system       Active   2d21h\
+root@master:~# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+kubectl describe ns <name-space>\
+\
+PODS can be created in two ways.\
+1. Command Line - Imperative\
+2. Yaml - Declarative\
+\
+kubectl run <podname> \'97image=<image-name> -n <namespace>\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:~# kubectl run pod1 --image=httpd -n dev2\
+pod/pod1 created\
+root@master:~# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:~# kubectl get pods -n dev2\
+NAME   READY   STATUS    RESTARTS   AGE\
+pod1   1/1     Running   0          46s\
+root@master:~# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:~# kubectl get pods -n dev2 -o wide\
+NAME   READY   STATUS    RESTARTS   AGE   IP          NODE      NOMINATED NODE   READINESS GATES\
+pod1   1/1     Running   0          84s   10.46.0.1   worker1   <none>           <none>\
+root@master:~# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+kubectl describe pod/<podname> -n <namespace> - to get complete information about the POD.\
+\
+kubectl apply -f filename.yaml\
+\
+kubectl edit pod <pod-name> -n <namespace>\
+\
+kubectl describe pods/<podname> -n <namespace>\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 kubectl describe pods/myfirst-pod -n dev2
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+YAML file consists of 4 components:\
+\
+apiVersion:\
+kind:\
+metadata:\
+spec:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:/yamls# cat first.yaml \
+apiVersion: v1\
+kind: Pod        \
+metadata:\
+   name: myfirst-pod\
+   namespace: dev2\
+   labels:\
+      env: dev\
+      customer: GOOGLE\
+      region: US-WEST-COAST\
+      sev: P1\
+      disk: ssd\
+   annotations:\
+      image: httpd-latest\
+      service: web-service\
+      App: dev\
+spec:\
+   containers:\
+   - name: pscsdev\
+     image: httpd\
+     ports:\
+     - containerPort: 80\
+root@master:/yamls# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+Sample file for mysql database:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:/yamls# cat mysql.yaml \
+apiVersion: v1\
+kind: Pod\
+metadata:\
+   name: mydb-pod\
+   namespace: dev2\
+   labels:\
+      env: devdb\
+      customer: mysql\
+      region: us-west\
+      disk: ssd\
+   annotations:\
+      image: mysql_db\
+      app: database     \
+spec:\
+   containers:\
+      - name: testsqldb\
+        image: mysql\
+        env: \
+           - name: "MYSQL_DATABASE"\
+             value: "TESTDB"\
+           - name: "MYSQL_USER"\
+             value: "mysql"\
+           - name: "MYSQL_PASSWORD"\
+             value: "sample"           \
+           - name: "MYSQL_ROOT_PASSWORD"\
+             value: "sample123"\
+        ports:\
+           - containerPort: 3306   \
+\
+root@master:/yamls# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+Steps to delete pods.\
+\
+kubectl delete pods/<podname> -n <namespace>\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:/yamls# kubectl delete pods/new-os-pod -n dev2\
+pod "new-os-pod" deleted\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+Delete pod using label : kubectl delete pod -l label\
+                                       kubectl delete pod -l disk=ssd\
+\
+How to set your namespace as default namespace.\
+\
+kubectl config set-context --current --namespace <namespace>\
+\
+Check labels of a POD \'97 kubectl get pods \'97show-labels\
+\
+Label pods : kubectl label pod <podname> label\
+\
+          	          kubectl label pod pod1 disk=ssd\
+\
+Remove label : kubectl label pod <podname> label -\
+                         kubectl label pod pod1 disk-\
+\
+\
+Create a yaml file using dry run.\
+\
+kubectl create deployment <pod-name> -n <namepsace> --image=<image-name> \'97dry-run -o yaml\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:/yamls# kubectl create deployment nginx-cont --image=nginx -n dev2 --dry-run -o yaml\
+W0319 23:01:54.926679   19906 helpers.go:553] --dry-run is deprecated and can be replaced with --dry-run=client.\
+apiVersion: apps/v1\
+kind: Deployment\
+metadata:\
+  creationTimestamp: null\
+  labels:\
+    app: nginx-cont\
+  name: nginx-cont\
+  namespace: dev2\
+spec:\
+  replicas: 1\
+  selector:\
+    matchLabels:\
+      app: nginx-cont\
+  strategy: \{\}\
+  template:\
+    metadata:\
+      creationTimestamp: null\
+      labels:\
+        app: nginx-cont\
+    spec:\
+      containers:\
+      - image: nginx\
+        name: nginx\
+        resources: \{\}\
+status: \{\}\
+root@master:/yamls# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+Scale up and scale down the pods.\
+\
+kubectl get rs  n <namespace> \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:/yamls# kubectl get rs -n dev2\
+NAME                     DESIRED   CURRENT   READY   AGE\
+pod-tru-dep-7968b885f7   2         2         2       20m\
+root@master:/yamls# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+kubectl scale deployment/<dep-name> \'97replicas=<number> -n <namespace>\
+\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:/yamls# kubectl scale deployment/pod-tru-dep --replicas=10 -n dev2\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 Scale up/down using yaml file.\
+\
+After updating the replicas in yaml file, then issue below command\
+\
+kubectl apply -f <filename> -n <namespace>\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf13 \cb3 \CocoaLigature0 root@master:/yamls# kubectl apply -f pods_deploymet.yaml -n dev2\
+deployment.apps/pod-tru-dep configured\
+root@master:/yamls# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+\
+}

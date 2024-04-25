@@ -1,0 +1,231 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2578
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red250\green242\blue240;\red0\green0\blue128;\red255\green255\blue255;
+\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cspthree\c98028\c96108\c95361;\cssrgb\c486\c9609\c57499;\cssrgb\c100000\c100000\c100000;
+\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww33400\viewh17940\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Docker Compose:\
+\
+1. Docker compose is created using yaml file extension or yml extension.\
+2. Indentation is very important while writing yaml files\
+3. Version in docker-compose depends on your docker \'97version.\
+     Here my docker-version is \
+     
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 root@docker:~/docker_files# docker --version
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+     
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 Docker version 19.03.8, build afacb8b7f0
+\f0\fs24 \cf0 \cb1 \CocoaLigature1      \
+\
+    From https://docs.docker.com/compose/compose-file/compose-versioning/ : you can see the versions which are compatible.\
+\
+4.  You can create docker-compose file with any name you wish to (my image.yaml)\
+\
+Sample docker-compose file:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 root@docker:~/docker_files# cat nginx.yaml \
+version: '3'\
+services:\
+  mynginx-apache_vol_test:\
+    image: nginx\
+    ports:\
+       - 9060:80/tcp\
+    volumes:\
+            - /root/docker_files:/usr/share/nginx/html/ \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+Explanation : In the above file, version is 3. Container name is mentioned asmynginx-apache_vol_test under services. Under your container we are telling the image and ports it should use in order to create a container for us.\
+\
+Execution: docker-compose -f nginx.yaml up -d\
+\
+\
+========SAMPLE docker-compose file to create 2 images using multiple custom network 1 for each image.\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 root@docker:~/docker_files# cat httpd_test_mulnetworks.yaml\
+version: '3'\
+services:\
+   myhttpd_cust:\
+      image: httpd\
+      networks:\
+         - mynetwork\
+      ports: \
+         - 7050:80/tcp\
+      volumes:\
+         - /root/docker_files:/usr/local/apache2/htdocs/\
+   mynginx_cust:\
+      image: nginx\
+      networks:\
+         - newcustnetwork\
+      ports:\
+         - 8050:80/tcp\
+      volumes:\
+         - /root/docker_files:/usr/share/nginx/html/\
+networks:\
+   mynetwork:\
+   newcustnetwork:\
+      external: true\
+root@docker:~/docker_files# \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+In the above, myhttpd_cust uses mynetwork and mynginx_cust uses newcustnetwork\
+\
+\
+Check status :\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf2 \cb3 \CocoaLigature0 root@docker:~/docker_files# docker-compose -f httpd_test_mulnetworks.yaml ps\
+           Name                          Command               State          Ports        \
+-------------------------------------------------------------------------------------------\
+docker_files_myhttpd_cust_1   httpd-foreground                 Up      0.0.0.0:7050->80/tcp\
+docker_files_mynginx_cust_1   /docker-entrypoint.sh ngin ...   Up      0.0.0.0:8050->80/tcp\
+root@docker:~/docker_files# \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+Create a Dockerfile and pass that file in docker-compose:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf4 \cb5 \CocoaLigature0 root@Docker:/DOCKER_FILE_COMPOSE_PRACTICE# cat one.yaml \
+version: '3'\
+services:\
+   web_httpd_cont:\
+      build:\
+         context: .\
+         dockerfile: /DOCKER_FILE_COMPOSE_PRACTICE/Dockerfile  \
+      ports:\
+         - 8080:80\
+   Ubuntu_OS:\
+      image: ubuntu\
+root@Docker:/DOCKER_FILE_COMPOSE_PRACTICE# cat Dockerfile \
+FROM httpd\
+Maintainer "Venky"\
+LABEL "ENV"="WEB"\
+\
+ARG DEBIAN_FRONTEND=noninteractive\
+\
+#Install Packages\
+RUN apt-get update -y && \\\
+    apt install vim -y && \\\
+    apt install iputils-ping -y\
+\
+COPY index.html /usr/local/apache2/htdocs/\
+\
+EXPOSE 80\
+\
+CMD ["httpd", "-D", "FOREGROUND"]\
+root@Docker:/DOCKER_FILE_COMPOSE_PRACTICE# \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+mysqldb:\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf4 \cb5 \CocoaLigature0 root@Docker:/DOCKER_FILE_COMPOSE_PRACTICE/UBUNTU_IMG# cat 1.yaml \
+version: '3'\
+services:\
+   db:\
+      image: mysql\
+      ports:\
+         - 1521:3306\
+      environment:\
+         MYSQL_DATABASE: venky_db\
+         MYSQL_USER: venky\
+         MYSQL_PASSWORD: welcome123\
+         MYSQL_ROOT_PASSWORD: 123\
+root@Docker:/DOCKER_FILE_COMPOSE_PRACTICE/UBUNTU_IMG# \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf4 \cb5 \CocoaLigature0 root@Docker:/DOCKER_FILE_COMPOSE_PRACTICE/UBUNTU_IMG# docker exec -it 761980d7aa5a mysql -u root -p\
+Enter password: \
+Welcome to the MySQL monitor.  Commands end with ; or \\g.\
+Your MySQL connection id is 8\
+Server version: 8.0.23 MySQL Community Server - GPL\
+\
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.\
+\
+Oracle is a registered trademark of Oracle Corporation and/or its\
+affiliates. Other names may be trademarks of their respective\
+owners.\
+\
+Type 'help;' or '\\h' for help. Type '\\c' to clear the current input statement.\
+\
+mysql> show databases;\
++--------------------+\
+| Database           |\
++--------------------+\
+| information_schema |\
+| mysql              |\
+| performance_schema |\
+| sys                |\
+| venky_db           |\
++--------------------+\
+5 rows in set (0.00 sec)\
+\
+mysql> use venky_db\
+Database changed\
+mysql> \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\
+Otherway :\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f1\fs28 \cf4 \cb5 \CocoaLigature0 docker exec -it 761980d7aa5a3 bash\
+\
+root@761980d7aa5a:/# mysql -u root -p\
+Enter password: \
+Welcome to the MySQL monitor.  Commands end with ; or \\g.\
+Your MySQL connection id is 10\
+Server version: 8.0.23 MySQL Community Server - GPL\
+\
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.\
+\
+Oracle is a registered trademark of Oracle Corporation and/or its\
+affiliates. Other names may be trademarks of their respective\
+owners.\
+\
+Type 'help;' or '\\h' for help. Type '\\c' to clear the current input statement.\
+\
+mysql> show databases;\
++--------------------+\
+| Database           |\
++--------------------+\
+| information_schema |\
+| mysql              |\
+| performance_schema |\
+| sys                |\
+| venky_db           |\
++--------------------+\
+5 rows in set (0.00 sec)\
+\
+mysql> \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \CocoaLigature1 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+\
+}
