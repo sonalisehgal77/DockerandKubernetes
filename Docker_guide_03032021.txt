@@ -1,0 +1,196 @@
+List of commands to start docker daemon:
+
+systemctl start docker or service docker start
+systemctl stop docker or service docker stop
+systemctl restart docker or service docker restart
+systemctl status docker or service docker status
+
+=========
+
+Docker daemon failed to start.
+
+Sol :
+
+Changing graphdriver to overlay2, fixed it:
+
+$ sudo systemctl stop docker
+$ vi /etc/docker/daemon.json # Create the file if it does not exists, and add:
+
+{
+  "storage-driver": "overlay2"
+}
+
+$ sudo systemctl start docker
+$ systemctl status docker.service # Hopefully it's running now
+
+=========
+
+docker pull <image-name> -- to pull the images
+docker run -it -d --name <cont-name> -v <volume>:/<desired path in container> -h <hostname> -p <portnumber>:containerport image-name
+
+--docker run -it -d --name test-nginx -v data_new:/usr/share/nginx/html -h webcontainer -p 90:80 nginx
+
+docker commit <container-id> --> to commit changes made to the container
+
+docker tag <image-id> name:version
+
+--docker tag 35c43ace9216 maven1985/containers:v1
+
+docker push maven1985/containers:v1 -- to push to repository
+
+docker export <containerid> > export.tar
+
+docker import -- <img-name> < export.tar
+
+docker save -o <image-id or image-name> <desired filename>
+--docker save -o nginx nginx-v3.0
+--docker save -o nginx nginx-v3.0.tar
+
+docker load < <filename>
+--docker load < nginx-v3.0.tar
+
+Create docker network --> docker network create <network-name>
+docker network ls --> to check list of networks
+docker inspect network-id --> to check details about the network 
+
+--docker inspect bridge
+
+brctl show --> to list bridges
+
+docker network connect <bridgename> container-name -- This connects the container to desired network
+
+docker@Docker:~$ docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+9843acf6aa6c        bridge              bridge              local
+77d4466ce0b7        cust_net            bridge              local
+b4d8f6198e8b        host                host                local
+f1f7f2e02bcc        none                null                local
+docker@Docker:~$ 
+
+docker network create --driver=bridge --subnet=11.11.0.0/24 mynet1
+
+docker run -it -d --name httpd_container -p 9090:80 -h webconatiner --network=mynet1 --ip=11.11.0.4 httpd
+
+--docker network connect bridge alpine_cust_bridge -- Here we have shitfed the container alpine_cust_bridge to 9843acf6aa6c network
+
+docker network connect 58949eb3f6dd nginx_cont
+
+Where 58949eb3f6dd is our custom network id.
+
+root@Docker:~# docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+ecd0b8820a48        bridge              bridge              local
+b4d8f6198e8b        host                host                local
+58949eb3f6dd        mynet1              bridge              local
+f1f7f2e02bcc        none                null                local
+
+
+docker network create <cust-Network-name> --subnet <your cust subnet> 
+
+--docker network create myprivatenw --subnet=10.10.0.0/24
+
+Note : By default the driver is bridge
+
+root@Docker:~# docker network create myprivatenw --subnet=10.10.0.0/24 
+fbd4f1560f6c9502b236d50c728e9d01cd13bb11f80e9e9ff2fd13da052d55b9
+root@Docker:~# docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+e22149ae9d3b        bridge              bridge              local
+77d4466ce0b7        cust_net            bridge              local
+b4d8f6198e8b        host                host                local
+fbd4f1560f6c        myprivatenw         bridge              local
+f1f7f2e02bcc        none                null                local
+root@Docker:~# 
+
+#####Verify which process is bound to port 80, using the netstat command.
+#####$ sudo netstat -tulpn | grep :80
+
+
+------DOCKER VOLUME ------
+Create docker volumes --> docker volume create <volume-name>
+docker volume ls --> to check list of volumes
+docker inspect <volume-name> --> to check complete details of the volume
+
+docker volume create --driver local --opt type=tmpfs --opt device=tmpfs --opt o=size 100m m-tmpfs
+
+docker volume create --driver local --opt type=btrfs --opt device=/dev/sda2 my-vol
+
+docker volume create --driver local --opttype=nfs --opt o=addr=192.168.1.1,rw --opt device=:/path/to/dir my-nfs
+
+docker run -it -d --name mynginx --mount source=my-vol,target=/app nginx:latest
+
+docker run -it -d --name mynginx1 -v my-vol:/app:ro nginx:latest
+
+
+=========Docker File==============
+
+
+CMD [“/usr/local/apache2/bin/httpd”, “-D”, “FOREGROUND”]
+
+httpd-foreground
+
+
+===================================
+
+Dockerfile concepts:
+
+sample dockerfile:
+
+
+FROM ubuntu:18.04
+MAINTAINER "venkylearnings@gmail.com"
+LABEL "ENV"="DEV"   -----> Label is is formated as key and value pair
+COPY sample.html /var/www/html ----> Copy command copies the sample.html file to target path (If there is no file in current dir, we can mention complete path)
+ADD sample.tar /var/www/html --> ADD keyword will untar and copy the files to targte location
+WORKDIR /data
+RUN mkdir -p /data/test 
+RUN apt-get update -y && \
+    apt install -qq apache2 -y && \  ---> -qq for non intractive mode
+	apt install -qq vim -y
+EXPOSE 80
+CMD ["apachectl", "-D", "FOREGROUND"]
+
+====================================
+
+https://medium.com/swlh/build-a-docker-image-using-maven-and-spring-boot-58147045a400
+
+
+=========
+
+OEL7 and httpd dockerfile:
+
+root@Docker:/Docker_files# cat oel_httpd.df 
+FROM oraclelinux:7
+
+MAINTAINER "OEL 7"
+LABEL "WEB"="HTTPD"
+
+RUN yum update -qq -y && \
+    yum install -qq httpd -y && \
+    yum install -qq vim -y
+
+#COPY index.html /usr/local/apache2/htdocs/
+
+COPY index.html /var/www/html/
+
+EXPOSE 80
+
+CMD ["httpd", "-D", "FOREGROUND"]
+root@Docker:/Docker_files# 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
